@@ -1,0 +1,17 @@
+print_headline			= false
+
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K.dump
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/bop/bop_al_test1.txt
+
+start_frame			= 1
+interval			= 1
+number_of_frames		= 5
+number_of_bins			= 100
+output_precision		= 15
+object_atom_type		= 3
+measurement_atom_type		= 0
+bond_order_parameter		= 6
+
+left_point_of_layer		= 0
+right_point_of_layer		= 50
+cutoff_distance			= 3.35

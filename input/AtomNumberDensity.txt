@@ -1,0 +1,9 @@
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K.dump
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/atom_density/test2.txt
+
+start_frame			= 1
+end_frame			= 20
+
+number_of_layers		= 200
+
+print_headline			= false

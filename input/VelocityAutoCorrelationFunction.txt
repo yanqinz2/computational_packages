@@ -1,0 +1,16 @@
+print_headline			= false
+
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K_velocity
+
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/vacf/vacf_z_44.55-60.55_40layers.txt
+
+calculation_dimension		= 3
+start_frame			= 1
+interval			= 1
+number_of_timepoints		= 500
+number_of_layers		= 40
+number_of_frames_to_be_averaged	= 20000
+
+frame_interval_time 		= 0.005
+left_point_of_the_layer		= 44.55
+right_point_of_the_layer	= 60.55

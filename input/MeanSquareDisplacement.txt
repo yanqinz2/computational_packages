@@ -1,0 +1,16 @@
+print_headline			= false
+
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K_unwrap
+
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/msd/msd_test1.txt
+
+calculation_dimension		= 12
+start_frame			= 1
+interval			= 10
+number_of_timepoints		= 10
+number_of_layers		= 2
+number_of_frames_to_be_averaged	= 10
+
+frame_interval_time 		= 0.005
+left_point_of_the_layer		= 40.55
+right_point_of_the_layer	= 60.55

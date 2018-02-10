@@ -1,0 +1,7 @@
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K.dump
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K_velocity
+
+start_frame			= 1
+end_frame			= 50001
+
+frame_interval_time		= 0.005

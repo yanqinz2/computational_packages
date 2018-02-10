@@ -1,0 +1,16 @@
+print_headline			= false
+
+trajectory_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/dump.aftercutting850K_unwrap
+
+output_file_path		= /Users/Yanqin/Documents/metallic_glasses/850K/ngp/ngp_test2.txt
+
+calculation_dimension		= 12
+start_frame			= 1
+interval			= 15
+number_of_timepoints		= 10
+number_of_layers		= 1
+number_of_frames_to_be_averaged	= 5
+
+frame_interval_time 		= 0.005
+left_point_of_the_layer		= 0
+right_point_of_the_layer	= 120
