@@ -7,6 +7,10 @@
 
 int main(int argc, char* argv[])
 {
+    argc = 3;
+    argv[1] = "-in";
+    argv[2] = "/Users/Yanqin/Documents/Programs/my_program_packages/input/VelocityAutoCorrelationFunction.txt";
+
     std::cout << "\nComputing velocity auto correlation function...\n" << std::endl;
 
     VelocityAutoCorrelationFunction velocity_auto_correlation_function_;
