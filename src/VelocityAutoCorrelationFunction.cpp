@@ -250,11 +250,11 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
     atom_type_.resize(number_of_atoms_);
 
     for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
-        getline(trajectory_file_, line_stream_);
         trajectory_file_ >> line_stream_ >> atom_type_[i_atom];
         if (atom_type_[i_atom] > number_of_types_of_atoms_) {
             number_of_types_of_atoms_ = atom_type_[i_atom];
         }
+        getline(trajectory_file_, line_stream_);
     }
 
     trajectory_file_.close();
@@ -306,6 +306,23 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
             }
         }
     }
+}
+
+void VelocityAutoCorrelationFunction::compute_vacf()
+{
+    std::cout << "Computing...\n" << std::endl;
+
+    // Determine the dimension needed to be calculated if only 2 dimensions neeeded
+    int dimension_0_, dimension_1_, dimension_2_;
+    if (calculation_dimension_ < 10) {
+        dimension_0_ = calculation_dimension_ - 1;
+    }
+    else if (calculation_dimension_ < 100) {
+        dimension_1_ = calculation_dimension_ / 10 - 1;
+        dimension_2_ = calculation_dimension_ % 10 - 1;
+    }
+
+    std::string line_stream_;
 
     file_pointer_ = new std::ifstream[number_of_timepoints_ + 1];
 #pragma omp parallel for
@@ -327,23 +344,6 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
             }
         }
     }
-}
-
-void VelocityAutoCorrelationFunction::compute_vacf()
-{
-    std::cout << "Computing...\n" << std::endl;
-
-    // Determine the dimension needed to be calculated if only 2 dimensions neeeded
-    int dimension_0_, dimension_1_, dimension_2_;
-    if (calculation_dimension_ < 10) {
-        dimension_0_ = calculation_dimension_ - 1;
-    }
-    else if (calculation_dimension_ < 100) {
-        dimension_1_ = calculation_dimension_ / 10 - 1;
-        dimension_2_ = calculation_dimension_ % 10 - 1;
-    }
-
-    std::string line_stream_;
 
     // read in velocity and compute VACF
     for (int i_average = 0; i_average < number_of_frames_to_be_averaged_; ++i_average) {
