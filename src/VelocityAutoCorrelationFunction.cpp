@@ -12,7 +12,7 @@
 
 #ifndef OMP
 #define OMP
-// #include "omp.h"
+#include "omp.h"
 #endif
 
 VelocityAutoCorrelationFunction::VelocityAutoCorrelationFunction():
