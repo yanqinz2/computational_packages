@@ -321,7 +321,7 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
                 trajectory_file_ >> atom_velocities_[i_frame][i_atom][i_dimension];
             }
             trajectory_file_ >> temp_z_coordinate_;
-            atom_layer_[i_frame][i_atom] = int(floor(fabs(temp_z_coordinate_) - layer_left_point_) / layer_width_);
+            atom_layer_[i_frame][i_atom] = int(floor((fabs(temp_z_coordinate_) - layer_left_point_) / layer_width_));
             getline(trajectory_file_, line_stream_);
         }
     }
