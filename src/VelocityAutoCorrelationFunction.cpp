@@ -237,6 +237,7 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
     }
 
     std::string line_stream_;
+    char line_string_[256];
 
     for (int i_line = 0; i_line < 3; ++i_line) {
         getline(trajectory_file_, line_stream_);
@@ -250,11 +251,11 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
     atom_type_.resize(number_of_atoms_);
 
     for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
-        getline(trajectory_file_, line_stream_);
         trajectory_file_ >> line_stream_ >> atom_type_[i_atom];
         if (atom_type_[i_atom] > number_of_types_of_atoms_) {
             number_of_types_of_atoms_ = atom_type_[i_atom];
         }
+        getline(trajectory_file_, line_stream_);
     }
 
     trajectory_file_.close();
@@ -307,23 +308,20 @@ void VelocityAutoCorrelationFunction::initialize_rest_members()
         }
     }
 
-    file_pointer_ = new std::ifstream[number_of_timepoints_ + 1];
-#pragma omp parallel for
-    for (int i_timepoint = 0; i_timepoint <= number_of_timepoints_; ++i_timepoint) {
-        file_pointer_[i_timepoint].open(trajectory_file_name_);
-    }
+    file_pointer_ = new FILE* [number_of_timepoints_ + 1];
+    file_pointer_[0] = fopen(trajectory_file_name_.c_str(), "r");
 
     // initialize the positions of the file pointers
     for (int i_frame = 1; i_frame < start_frame_; ++i_frame) {
         for (int i_line = 0; i_line < number_of_atoms_ + dimension_ + 6; ++i_line) {
-            getline(file_pointer_[0], line_stream_);
+            fgets(line_string_, 256, file_pointer_[0]);
         }
     }
     for (int i_timepoint = 1; i_timepoint <= number_of_timepoints_; ++i_timepoint) {
-        file_pointer_[i_timepoint].seekg(file_pointer_[i_timepoint - 1].tellg());
+        file_pointer_[i_timepoint] = file_pointer_[i_timepoint - 1];
         for (int i_frame = 0; i_frame < interval_; ++i_frame) {
             for (int i_line = 0; i_line < number_of_atoms_ + dimension_ + 6; ++i_line) {
-                getline(file_pointer_[i_timepoint], line_stream_);
+                fgets(line_string_, 256, file_pointer_[i_timepoint]);
             }
         }
     }
@@ -343,28 +341,28 @@ void VelocityAutoCorrelationFunction::compute_vacf()
         dimension_2_ = calculation_dimension_ % 10 - 1;
     }
 
-    std::string line_stream_;
+    char line_string_[256];
+    unsigned int temp_int_vessel_;
 
     // read in velocity and compute VACF
     for (int i_average = 0; i_average < number_of_frames_to_be_averaged_; ++i_average) {
         // read velocity into base velocity vessel
         for (int i_line = 0; i_line < dimension_ + 6; ++i_line) {
-            getline(file_pointer_[0], line_stream_);
-
+            fgets(line_string_, 256, file_pointer_[0]);
         }
         for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
-            file_pointer_[0] >> line_stream_ >> line_stream_;
+            fscanf(file_pointer_[0], "%d%d", &temp_int_vessel_, &temp_int_vessel_);
             for (int i_dimension = 0; i_dimension < dimension_; ++i_dimension) {
-                file_pointer_[0] >> base_atom_velocity_[i_atom][i_dimension];
+                fscanf(file_pointer_[0], "%lf", &base_atom_velocity_[i_atom][i_dimension]);
             }
-            file_pointer_[0] >> base_atom_z_coordinate_[i_atom];
-            getline(file_pointer_[0], line_stream_);
+            fscanf(file_pointer_[0], "%lf", &base_atom_z_coordinate_[i_atom]);
         }
+        fgets(line_string_, 256, file_pointer_[0]);
 
 #pragma omp parallel for
         for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
             int temp_atom_type_ = atom_type_[i_atom] - 1;
-            base_atom_layer_[i_atom] = int (floor((fabs(base_atom_z_coordinate_[i_atom]) - layer_left_point_) / layer_width_));
+            base_atom_layer_[i_atom] = int(floor((fabs(base_atom_z_coordinate_[i_atom]) - layer_left_point_) / layer_width_));
             if (base_atom_layer_[i_atom] >= 0 && base_atom_layer_[i_atom] < number_of_layers_) {
                 double temp_add_ = 0.0;
                 if (calculation_dimension_ < 10) {
@@ -389,20 +387,20 @@ void VelocityAutoCorrelationFunction::compute_vacf()
         // read file separately into measurement velocity vessel and compute VACF
         for (int i_timepoint = 1; i_timepoint <= number_of_timepoints_; ++i_timepoint) {
             for (int i_line = 0; i_line < dimension_ + 6; ++i_line) {
-                getline(file_pointer_[i_timepoint], line_stream_);
+                fgets(line_string_, 256, file_pointer_[i_timepoint]);
             }
             for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
-                file_pointer_[i_timepoint] >> line_stream_ >> line_stream_;
+                fscanf(file_pointer_[i_timepoint], "%d%d", &temp_int_vessel_, &temp_int_vessel_);
                 for (int i_dimension = 0; i_dimension < dimension_; ++i_dimension) {
-                    file_pointer_[i_timepoint] >> measurement_atom_velocity_[i_atom][i_dimension];
+                    fscanf(file_pointer_[i_timepoint], "%lf", &measurement_atom_velocity_[i_atom][i_dimension]);
                 }
-                file_pointer_[i_timepoint] >> measurement_atom_z_coordinate_[i_atom];
-                getline(file_pointer_[i_timepoint], line_stream_);
+                fscanf(file_pointer_[i_timepoint], "%lf", &measurement_atom_z_coordinate_[i_atom]);
             }
+            fgets(line_string_, 256, file_pointer_[i_timepoint]);
 
 #pragma omp parallel for
             for (int i_atom = 0; i_atom < number_of_atoms_; ++i_atom) {
-                measurement_atom_layer_[i_atom] = int (floor((fabs(measurement_atom_z_coordinate_[i_atom]) - layer_left_point_) / layer_width_));
+                measurement_atom_layer_[i_atom] = int(floor((fabs(measurement_atom_z_coordinate_[i_atom]) - layer_left_point_) / layer_width_));
                 if (base_atom_layer_[i_atom] == measurement_atom_layer_[i_atom] && base_atom_layer_[i_atom] >= 0 && base_atom_layer_[i_atom] < number_of_layers_) {
                     int temp_atom_type_ = atom_type_[i_atom] - 1;
                     double temp_add_ = 0.0;
@@ -422,7 +420,6 @@ void VelocityAutoCorrelationFunction::compute_vacf()
                     velocity_auto_correlation_function_[base_atom_layer_[i_atom]][temp_atom_type_][i_timepoint] += temp_add_;
 #pragma omp atomic
                     ++number_of_atoms_for_average_[base_atom_layer_[i_atom]][temp_atom_type_][i_timepoint];
-
                 }
             }
         }
@@ -435,7 +432,7 @@ void VelocityAutoCorrelationFunction::compute_vacf()
 
 #pragma omp parallel for
     for (int i_timepoint = 0; i_timepoint <= number_of_timepoints_; ++i_timepoint) {
-        file_pointer_[i_timepoint].close();
+        fclose(file_pointer_[i_timepoint]);
     }
 
 #pragma omp parallel for
