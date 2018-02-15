@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string>
 #include <vector>
 
@@ -53,7 +52,7 @@ protected:
     std::vector< std::vector< double > > measurement_atom_velocity_;
     std::vector< std::vector< std::vector< double > > > velocity_auto_correlation_function_;
 
-    std::ifstream* file_pointer_;
+    std::FILE** file_pointer_;
 
 private:
 };
