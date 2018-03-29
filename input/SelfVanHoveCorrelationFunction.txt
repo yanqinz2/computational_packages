@@ -1,0 +1,19 @@
+print_headline			= 
+is_trajectory_wrapped		= 
+
+trajectory_file_path		= 
+output_file_path		= 
+
+calculation_dimension		= 
+start_frame			= 
+interval			= 
+number_of_timepoints		= 
+number_of_bins			= 
+number_of_layers		= 
+number_of_frames_to_be_averaged	= 
+output_precision		= 
+
+cutoff_distance			= 
+frame_interval_time 		= 
+left_point_of_the_layer		= 
+right_point_of_the_layer	= 
