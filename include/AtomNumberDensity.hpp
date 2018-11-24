@@ -33,6 +33,7 @@ protected:
     std::vector< unsigned int > number_of_atoms_of_each_type_;
     std::vector< unsigned int > atom_type_;
 
+    double effective_width_;
     double width_of_layers_;
 
     std::vector< double > left_point_of_box_;
