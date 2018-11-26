@@ -307,6 +307,23 @@ void MeanSquareDisplacement::initialize_rest_members()
             }
         }
     }
+}
+
+void MeanSquareDisplacement::compute_msd()
+{
+    std::cout << "Computing...\n" << std::endl;
+
+    // Determine the dimension needed to be calculated if only 2 dimensions neeeded
+    int dimension_0_, dimension_1_, dimension_2_;
+    if (calculation_dimension_ < 10) {
+        dimension_0_ = calculation_dimension_ - 1;
+    }
+    else if (calculation_dimension_ < 100) {
+        dimension_1_ = calculation_dimension_ / 10 - 1;
+        dimension_2_ = calculation_dimension_ % 10 - 1;
+    }
+
+    std::string line_stream_;
 
     file_pointer_ = new std::ifstream[number_of_timepoints_ + 1];
 #pragma omp parallel for
@@ -328,23 +345,6 @@ void MeanSquareDisplacement::initialize_rest_members()
             }
         }
     }
-}
-
-void MeanSquareDisplacement::compute_msd()
-{
-    std::cout << "Computing...\n" << std::endl;
-
-    // Determine the dimension needed to be calculated if only 2 dimensions neeeded
-    int dimension_0_, dimension_1_, dimension_2_;
-    if (calculation_dimension_ < 10) {
-        dimension_0_ = calculation_dimension_ - 1;
-    }
-    else if (calculation_dimension_ < 100) {
-        dimension_1_ = calculation_dimension_ / 10 - 1;
-        dimension_2_ = calculation_dimension_ % 10 - 1;
-    }
-
-    std::string line_stream_;
 
     // read in trajectory and compute msd
     for (int i_average = 0; i_average < number_of_frames_to_be_averaged_; ++i_average) {
