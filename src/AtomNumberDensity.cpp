@@ -23,7 +23,8 @@ AtomNumberDensity::AtomNumberDensity():
         end_frame_(1),
         dimension_(3),
         number_of_layers_(1),
-        output_precision_(15)
+        output_precision_(15),
+        effective_width_(1.0)
 {
 }
 
@@ -99,7 +100,7 @@ void AtomNumberDensity::read_input_file()
             if (input_word_[0] == '=') {
                 input_file_ >> input_word_;
             }
-            start_frame_ = stod(input_word_);
+            start_frame_ = stoi(input_word_);
             continue;
         }
         if (input_word_ == "end_frame") {
@@ -107,7 +108,7 @@ void AtomNumberDensity::read_input_file()
             if (input_word_[0] == '=') {
                 input_file_ >> input_word_;
             }
-            end_frame_ = stod(input_word_);
+            end_frame_ = stoi(input_word_);
             continue;
         }
         if (input_word_ == "number_of_layers") {
@@ -115,7 +116,7 @@ void AtomNumberDensity::read_input_file()
             if (input_word_[0] == '=') {
                 input_file_ >> input_word_;
             }
-            number_of_layers_ = stod(input_word_);
+            number_of_layers_ = stoi(input_word_);
             continue;
         }
         if (input_word_ == "output_precision") {
@@ -123,7 +124,15 @@ void AtomNumberDensity::read_input_file()
             if (input_word_[0] == '=') {
                 input_file_ >> input_word_;
             }
-            output_precision_ = stod(input_word_);
+            output_precision_ = stoi(input_word_);
+            continue;
+        }
+        if (input_word_ == "effective_width") {
+            input_file_ >> input_word_;
+            if (input_word_[0] == '=') {
+                input_file_ >> input_word_;
+            }
+            effective_width_ = stod(input_word_);
             continue;
         }
     }
@@ -270,13 +279,13 @@ void AtomNumberDensity::compute_atom_number_density()
 
     trajectory_file_.close();
 
-    double temp_normalization_ = 2 * number_of_frames_ * width_of_layers_ / box_length_[0];
+    double normalization_factor = effective_width_ / (2 * number_of_frames_ * width_of_layers_);
 #pragma omp parallel for
     for (int i_layer = 0; i_layer < number_of_layers_; ++i_layer) {
         for (int i_type = 0; i_type < number_of_types_of_atoms_; ++i_type) {
-            number_density_of_each_layer_[i_layer][i_type] /= temp_normalization_ * number_of_atoms_of_each_type_[i_type];
+            number_density_of_each_layer_[i_layer][i_type] *= normalization_factor / number_of_atoms_of_each_type_[i_type];
         }
-        number_density_of_each_layer_[i_layer][number_of_types_of_atoms_] /= temp_normalization_ * number_of_atoms_;
+        number_density_of_each_layer_[i_layer][number_of_types_of_atoms_] *= normalization_factor / number_of_atoms_;
     }
 }
 
